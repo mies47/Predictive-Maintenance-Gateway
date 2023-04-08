@@ -4,12 +4,15 @@
 #include <Adafruit_ADXL345_U.h>
 #include <ArduinoJson.h>
 
-SoftwareSerial xbeeSerial(1,0); //RX, TX
 const int SAMPLING_FREQ = 25;
 const int SAMPLING_DELAY = 1000 / SAMPLING_FREQ;
 /* Used ArduinoJson assistant at https://arduinojson.org/v6/assistant/ */
 const long STRUCTURE_SIZE = 32;
 const size_t MEASUREMENT_CAPACITY = SAMPLING_FREQ * STRUCTURE_SIZE;
+
+/* Serial used for xbee communication */
+SoftwareSerial xbeeSerial(1,0); //RX, TX
+
 /* Sensor data for each round of measurement in 3 dminesions */
 StaticJsonDocument<MEASUREMENT_CAPACITY> measurement;
 
