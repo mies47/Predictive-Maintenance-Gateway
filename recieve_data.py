@@ -1,19 +1,23 @@
-import logging
 import json
+import uuid
+import logging
+
 from digi.xbee.devices import XBeeDevice
-from models import VibrationData, DataModel, DataModelDict
+
+from models import VibrationData, DataModel, DataModelList
+from env_vars import XBEE_DIR, BAUD_RATE
+
 
 logger = logging.basicConfig(filename="reciever.log")
 
-PORT = "/dev/ttyUSB0"
-BAUD_RATE = 9600
 
-def fill_vibration(raw_data: str) -> VibrationData:
+def fill_vibration(raw_data: str, measurement_id: str) -> VibrationData:
     decoded_data = json.loads(raw_data)
-    return VibrationData(x=decoded_data.x, y=decoded_data.y, z=decoded_data.z)
+    return VibrationData(measurmentId=measurement_id, x=decoded_data.x, y=decoded_data.y, z=decoded_data.z)
 
-def recieve(data_dict: DataModelDict):
-    device = XBeeDevice(PORT, BAUD_RATE)
+
+def recieve(data_list: DataModelList, measurement_id: str):
+    device = XBeeDevice(XBEE_DIR, BAUD_RATE)
 
     try:
         device.open()
@@ -25,18 +29,22 @@ def recieve(data_dict: DataModelDict):
 
             if xbee_message is not None:
                 node_id = xbee_message.remote_device.get_64bit_addr()
-                vibration_data = fill_vibration(xbee_message.data)
+                vibration_data = fill_vibration(raw_data=xbee_message.data, measurement_id=measurement_id)
                 
-                data_dict.add_data_model(node_id, DataModel(node_id, vibration_data))
+                data_list.add_data_model(DataModel(node_id, vibration_data))
+    
     except Exception as e:
         logging.exception(e)
+
     finally:
         if device is not None and device.is_open():
             device.close()
 
 
 if __name__ == '__main__':
-    data_dict = DataModelDict()
+    data_list = DataModelList()
+
+    measurement_id = uuid.uuid4().hex
 
     while True:
-        recieve(data_dict)
+        recieve(data_list=data_list, measurement_id=measurement_id)

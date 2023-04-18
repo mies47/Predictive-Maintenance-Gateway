@@ -2,8 +2,9 @@ from typing import List
 from utils import get_current_time
 
 class VibrationData:
-	def __init__(self, x: float, y: float, z: float):
+	def __init__(self, measurmentId: str, x: float, y: float, z: float):
 		self.time = get_current_time()
+		self.measurementId = measurmentId
 		self.x = x
 		self.y = y
 		self.z = z
@@ -18,12 +19,9 @@ class DataModel:
 		self.vibrationData.append(d)
 
 
-class DataModelDict:
-	def __init__(self, data: dict[str, DataModel] = {}):
+class DataModelList:
+	def __init__(self, data: List[DataModel] = []):
 		self.data = data
 
-	def add_data_model(self, n_id: str, d: DataModel):
-		if self.data.get(n_id):
-			self.data[n_id].add_vibration_data(d)
-		else:
-			self.data[n_id] = DataModel(nodeId=n_id, vibrationData=d)
+	def add_data_model(self, d: DataModel):
+		self.data.append(d)
