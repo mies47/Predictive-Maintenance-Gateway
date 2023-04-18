@@ -5,31 +5,25 @@ import requests
 
 from models import VibrationData, DataModel, DataModelList
 from utils import get_current_time, get_mac_address, ModelJsonObject
+from env_vars import REQUEST_PROTOCOL, SERVER_IP, SERVER_PORT, API_PREFIX, DATA_ENDPOINT
 
-
-with open('config.json') as f:
-	config = json.load(f)
 
 # with open('cached', 'rb') as f:
 #	data = pickle.load(f)
 
-REQUEST_PROTOCOL = config['REQUEST_PROTOCOL']
-SERVER_IP = config['SERVER_IP']
-SERVER_PORT = config['SERVER_PORT']
-API_PREFIX = config['API_PREFIX']
-DATA_THRESHOLD = config['DATA_THRESHOLD']
 
-# TODO: Check cached data size based on threshold in config
+# TODO: Check if a specific amount of time has passed since the last data transfer
 if True:
-	url = f'{REQUEST_PROTOCOL}://{SERVER_IP}:{SERVER_PORT}/{API_PREFIX}'
-	url = f'{url}/data/'
-	obj = VibrationData(2, 3.0, 4.0)
-	p = DataModel(get_mac_address())
-	p.add_vibration_data(obj)
-	o = DataModelList()
-	o.add_data_model(p)
-	print(url, json.dumps(o, cls=ModelJsonObject, indent=4))
-	r = requests.post(url, data=json.dumps(o, cls=ModelJsonObject, indent=4))
+	baseUrl = f'{REQUEST_PROTOCOL}://{SERVER_IP}:{SERVER_PORT}'
+	url = f'{baseUrl}{API_PREFIX}{DATA_ENDPOINT}'
+	obj = VibrationData(measurmentId='ThisIsATest', x=2, y=3.0, z=4.0)
+	n_id = get_mac_address()
+	dataModel = DataModel(n_id)
+	dataModel.add_vibration_data(obj)
+	d = DataModelList()
+	d.add_data_model(dataModel)
+	print(url, json.dumps(d, cls=ModelJsonObject, indent=4))
+	r = requests.post(url, data=json.dumps(d, cls=ModelJsonObject, indent=4))
 	# TODO: Check if data is sent successfully
 	with open('cached', 'wb') as f:
 		pass
