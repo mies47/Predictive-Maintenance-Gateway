@@ -1,5 +1,6 @@
 import json
 import uuid
+import pickle
 import logging
 
 from digi.xbee.devices import XBeeDevice
@@ -9,6 +10,11 @@ from env_vars import XBEE_DIR, BAUD_RATE
 
 
 logger = logging.basicConfig(filename="reciever.log")
+
+
+def update_cached_data(data_list: DataModelList):
+    with open('cached', 'wb') as f:
+        pickle.dump(data_list, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def fill_vibration(raw_data: str, measurement_id: str) -> VibrationData:
@@ -37,6 +43,7 @@ def recieve(data_list: DataModelList, measurement_id: str):
                     data_model = DataModel(nodeId=node_id)
                 
                 data_model.add_vibration_data(vibration_data)
+                update_cached_data(data_list)
     
     except Exception as e:
         logging.exception(e)
