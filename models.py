@@ -15,6 +15,7 @@ class DataModel:
 		self.nodeId = nodeId
 		self.vibrationData = vibrationData
 
+
 	def add_vibration_data(self, d: VibrationData):
 		self.vibrationData.append(d)
 
@@ -23,5 +24,13 @@ class DataModelList:
 	def __init__(self, data: List[DataModel] = []):
 		self.data = data
 
+
 	def add_data_model(self, d: DataModel):
 		self.data.append(d)
+
+
+	def get_node_data_model(self, nodeId: str) -> DataModel:
+		for dataModel in self.data:
+			if dataModel.nodeId == nodeId:
+				return dataModel
+		return None
