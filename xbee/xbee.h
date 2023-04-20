@@ -53,12 +53,12 @@ class XbeeRequestFrame
         uint8_t* constructFrame();
         void writeFrameToSerial();
     private:
-        uint8_t frameType;
-        uint8_t frameId; // Do not set to 0. Setting Frame ID to '0' will disable response frame.
-        XbeeDestAddress destinationAddress;
-        uint8_t broadcastRadius; // If set to '0', the broadcast radius will be set to the maximum hops value.
-        uint8_t options; // No option is actually needed. Set to 0
-        uint8_t* data; // Up to 255 bytes of data could be sent.
+        uint8_t _frameType;
+        uint8_t _frameId; // Do not set to 0. Setting Frame ID to '0' will disable response frame.
+        XbeeDestAddress _destinationAddress;
+        uint8_t _broadcastRadius; // If set to '0', the broadcast radius will be set to the maximum hops value.
+        uint8_t _options; // No option is actually needed. Set to 0
+        uint8_t* _data; // Up to 255 bytes of data could be sent.
 
 }
 
