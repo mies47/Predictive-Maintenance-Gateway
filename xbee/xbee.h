@@ -19,7 +19,8 @@
 #ifndef Xbee_h
 #define Xbee_h
 
-#include "Arduino.h"
+// #include "arduino.h"
+#include "stdint.h"
 
 #define START_DELIMITER 0x7E;
 #define Tx_REQ_API_ID 0x10;
@@ -37,7 +38,7 @@ class XbeeDestAddress
         uint64_t _xbeeDes64BitAddress;
         uint16_t _xbeeDest16BitAddress;
 
-}
+};
 
 class XbeeRequestFrame
 {
@@ -62,4 +63,4 @@ class XbeeRequestFrame
 
 }
 
-#end_if
+#endif
