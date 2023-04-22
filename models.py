@@ -33,4 +33,7 @@ class DataModelList:
 		for dataModel in self.data:
 			if dataModel.nodeId == nodeId:
 				return dataModel
-		return None
+		dataModel = DataModel(nodeId=nodeId)
+		self.add_data_model(d=dataModel)
+
+		return dataModel
