@@ -19,8 +19,9 @@
 #ifndef Xbee_h
 #define Xbee_h
 
-// #include "arduino.h"
+#include "Arduino.h"
 #include "stdint.h"
+#include "SoftwareSerial.h"
 
 #define START_DELIMITER 0x7E;
 #define Tx_REQ_API_ID 0x10;
@@ -52,7 +53,7 @@ class XbeeRequest
             uint8_t* data
         );
         void constructFrame(uint8_t* frameBuffer);
-        void writeFrameToSerial(uint8_t* frame);
+        void writeFrameToSerial(uint8_t* frame, SoftwareSerial serialToWrite);
     private:
         uint8_t _frameType;
         uint8_t _frameId; // Do not set to 0. Setting Frame ID to '0' will disable response frame.
