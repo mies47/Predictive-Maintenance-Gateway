@@ -32,8 +32,8 @@ class XbeeDestAddress
 {
     public:
         XbeeDestAddress(uint64_t xbeeDes64BitAddress, uint16_t xbeeDes16BitAddress);
-        uint8_t* getXbeeDest64BitAddress();
-        uint8_t* getXbeeDest16BitAddress();
+        void getXbeeDest64BitAddress(uint8_t* addressBuffer64Bit);
+        void getXbeeDest16BitAddress(uint8_t* addressBuffer16Bit);
     private:
         uint64_t _xbeeDes64BitAddress;
         uint16_t _xbeeDest16BitAddress;
@@ -51,7 +51,7 @@ class XbeeRequest
             uint8_t options,
             uint8_t* data
         );
-        uint8_t* constructFrame();
+        void constructFrame(uint8_t* frameBuffer);
         void writeFrameToSerial(uint8_t* frame);
     private:
         uint8_t _frameType;
