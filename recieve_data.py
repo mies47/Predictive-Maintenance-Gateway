@@ -39,9 +39,6 @@ def recieve(data_list: DataModelList, measurement_id: str):
                 
                 data_model = data_list.get_node_data_model(nodeId=node_id)
                 
-                if data_model is None:
-                    data_model = DataModel(nodeId=node_id)
-                
                 data_model.add_vibration_data(vibration_data)
                 update_cached_data(data_list)
     
