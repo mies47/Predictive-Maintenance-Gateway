@@ -40,10 +40,10 @@ class XbeeDestAddress
 
 };
 
-class XbeeRequestFrame
+class XbeeRequest
 {
     public:
-        XbeeRequestFrame(
+        XbeeRequest(
             uint8_t frameType,
             uint8_t frameId,
             XbeeDestAddress destinationAddress,
@@ -52,7 +52,7 @@ class XbeeRequestFrame
             uint8_t* data
         );
         uint8_t* constructFrame();
-        void writeFrameToSerial();
+        void writeFrameToSerial(uint8_t* frame);
     private:
         uint8_t _frameType;
         uint8_t _frameId; // Do not set to 0. Setting Frame ID to '0' will disable response frame.
