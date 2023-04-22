@@ -104,3 +104,7 @@ void XbeeRequest::constructFrame(uint8_t* frameBuffer)
     checksum = 0xFF - checksum;
     frameBuffer[currentIndex] = checksum;
 }
+void XbeeRequest::writeFrameToSerial(uint8_t* frame, SoftwareSerial serialToWrite)
+{
+    serialToWrite.write(frame, sizeof(frame));
+}
