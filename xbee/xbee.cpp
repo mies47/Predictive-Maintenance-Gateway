@@ -7,21 +7,17 @@ XbeeDestAddress::XbeeDestAddress(
     _xbeeDes64BitAddress = xbeeDes64BitAddress;
     _xbeeDest16BitAddress = xbeeDes16BitAddress;   
 }
-uint8_t* XbeeDestAddress::getXbeeDest64BitAddress()
+void XbeeDestAddress::getXbeeDest64BitAddress(uint8_t* addressBuffer64Bit)
 {
-    uint8_t destAddressByteArray[sizeof(uint64_t)];
     for(int i = 0; i < sizeof(uint64_t); i++) {
-        destAddressByteArray[i] = _xbeeDes64BitAddress >> (8 * i);
+        addressBuffer64Bit[i] = _xbeeDes64BitAddress >> (8 * i);
     }
-    return destAddressByteArray;
 }
-uint8_t* XbeeDestAddress::getXbeeDest16BitAddress()
+void XbeeDestAddress::getXbeeDest16BitAddress(uint8_t* addressBuffer16Bit)
 {
-    uint8_t destAddressByteArray[sizeof(uint16_t)];
     for(int i = 0; i < sizeof(uint16_t); i++) {
-        destAddressByteArray[i] = _xbeeDest16BitAddress >> (8 * i);
+        addressBuffer16Bit[i] = _xbeeDest16BitAddress >> (8 * i);
     }
-    return destAddressByteArray;
 }
 
 
@@ -39,40 +35,72 @@ XbeeRequest::XbeeRequest(
     uint8_t _options = options; // No option is actually needed. Set to 0
     uint8_t* _data = data;
 }
-uint8_t* XbeeRequest::constructFrame()
+void XbeeRequest::constructFrame(uint8_t* frameBuffer)
 {
     const int fixedFrameLength = 17; // Counting delimeter, length, address, checksum, etc.
     const int dataLength = sizeof(_data);
     const int frameLength = fixedFrameLength + dataLength;
-    uint8_t frame[frameLength];
     int currentIndex = 0;
     uint8_t checksum = 0x00;
     // Begin constructing the frame
 
     // Start delimeter
-    frame[currentIndex] = START_DELIMITER;
+    frameBuffer[currentIndex] = START_DELIMITER;
     currentIndex++;
 
     // Length
-    frame[currentIndex] = (uint8_t) frameLength >> 8; //MSB
+    frameBuffer[currentIndex] = (uint8_t) frameLength >> 8; //MSB
     currentIndex++;
-    frame[currentIndex] = (uint8_t) frameLength; //LSB
+    frameBuffer[currentIndex] = (uint8_t) frameLength; //LSB
     currentIndex++;
 
     // Frame Type
     // Start Calculating checksum from here
-    frame[currentIndex] = Tx_REQ_API_ID;
+    frameBuffer[currentIndex] = Tx_REQ_API_ID;
     checksum += Tx_REQ_API_ID;
     currentIndex++;
 
     // Frame ID - Do not set to 0. Setting Frame ID to '0' will disable response frame.
-    frame[currentIndex] = _frameId;
+    frameBuffer[currentIndex] = _frameId;
     checksum += _frameId;
     currentIndex++;
 
     // Destination 64 bit address. Start from MSB
+    uint8_t addressBuffer64Bit[sizeof(uint64_t)];
+    _destinationAddress.getXbeeDest64BitAddress(addressBuffer64Bit);
+    for(int i = sizeof(uint64_t); i > 0; i--) { // MSB First
+        frameBuffer[currentIndex] = addressBuffer64Bit[i];
+        checksum += addressBuffer64Bit[i];
+        currentIndex++;
+    }
 
+    // Destination 16 bit address. Start from MSB
+    uint8_t addressBuffer16Bit[sizeof(uint16_t)];
+    _destinationAddress.getXbeeDest16BitAddress(addressBuffer16Bit);
+    for(int i = sizeof(uint16_t); i > 0; i--) { // MSB First
+        frameBuffer[currentIndex] = addressBuffer16Bit[i];
+        checksum += addressBuffer16Bit[i];
+        currentIndex++;
+    }
 
-    
+    // Broadcast Radius
+    frameBuffer[currentIndex] = _broadcastRadius;
+    checksum += _broadcastRadius;
+    currentIndex++;
 
+    // Options
+    frameBuffer[currentIndex] = _options;
+    checksum += _options;
+    currentIndex++;
+
+    // RF Data
+    for(int i = 0; i < sizeof(_data); i++) { // MSB first
+        frameBuffer[currentIndex] = _data[i];
+        checksum += _data[i];
+        currentIndex++;
+    }
+
+    // Checksum
+    checksum = 0xFF - checksum;
+    frameBuffer[currentIndex] = checksum;
 }
