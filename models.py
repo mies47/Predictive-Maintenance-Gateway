@@ -2,9 +2,9 @@ from typing import List
 from utils import get_current_time
 
 class VibrationData:
-	def __init__(self, measurmentId: str, x: float, y: float, z: float):
+	def __init__(self, measurementId: str, x: float, y: float, z: float):
 		self.time = get_current_time()
-		self.measurementId = measurmentId
+		self.measurementId = measurementId
 		self.x = x
 		self.y = y
 		self.z = z

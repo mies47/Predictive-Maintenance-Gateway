@@ -19,7 +19,7 @@ def update_cached_data(data_list: DataModelList):
 
 def fill_vibration(raw_data: str, measurement_id: str) -> VibrationData:
     decoded_data = json.loads(raw_data)
-    return VibrationData(measurmentId=measurement_id, x=decoded_data.x, y=decoded_data.y, z=decoded_data.z)
+    return VibrationData(measurementId=measurement_id, x=decoded_data.x, y=decoded_data.y, z=decoded_data.z)
 
 
 def recieve(data_list: DataModelList, measurement_id: str):
