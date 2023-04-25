@@ -1,4 +1,6 @@
-#include "xbee.h"
+#include "Xbee.h"
+#include "Arduino.h"
+
 
 XbeeDestAddress::XbeeDestAddress(
     uint64_t xbeeDes64BitAddress,
