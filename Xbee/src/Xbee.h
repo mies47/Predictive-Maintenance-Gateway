@@ -19,13 +19,13 @@
 #ifndef Xbee_h
 #define Xbee_h
 
-#include "Arduino.h"
+// #include "Arduino.h"
 #include "stdint.h"
 #include "SoftwareSerial.h"
 
-#define START_DELIMITER 0x7E;
-#define Tx_REQ_API_ID 0x10;
-#define Tx_STATUS_API_ID 0x8B;
+#define START_DELIMITER 0x7E
+#define Tx_REQ_API_ID 0x10
+#define Tx_STATUS_API_ID 0x8B
 // #define BROADCAST_RADIUS 0x00; // If set to '0', the broadcast radius will be set to the maximum hops value.
 // #define OPTIONS 0x00; // No option is actually needed
 
@@ -62,6 +62,6 @@ class XbeeRequest
         uint8_t _options; // No option is actually needed. Set to 0
         uint8_t* _data; // Up to 255 bytes of data could be sent.
 
-}
+};
 
 #endif
