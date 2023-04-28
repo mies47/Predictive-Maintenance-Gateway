@@ -19,15 +19,13 @@
 #ifndef Xbee_h
 #define Xbee_h
 
-// #include "Arduino.h"
 #include "stdint.h"
 #include "SoftwareSerial.h"
 
 #define START_DELIMITER 0x7E
 #define Tx_REQ_API_ID 0x10
 #define Tx_STATUS_API_ID 0x8B
-// #define BROADCAST_RADIUS 0x00; // If set to '0', the broadcast radius will be set to the maximum hops value.
-// #define OPTIONS 0x00; // No option is actually needed
+
 
 class XbeeDestAddress
 {
@@ -46,21 +44,27 @@ class XbeeRequest
     public:
         XbeeRequest(
             uint8_t frameType,
-            uint8_t frameId,
             XbeeDestAddress destinationAddress,
             uint8_t broadcastRadius,
-            uint8_t options,
-            uint8_t* data
+            uint8_t options
         );
-        void constructFrame(uint8_t* frameBuffer);
-        void writeFrameToSerial(uint8_t* frame, SoftwareSerial serialToWrite);
+        void constructFrame(
+            uint8_t frameId, 
+            uint8_t* frameBuffer, 
+            size_t bufferSize, 
+            uint8_t* data, 
+            size_t dataSize
+        );
+        void writeFrameToSerial(
+            uint8_t* frame, 
+            size_t frameSize, 
+            SoftwareSerial serialToWrite
+        );
     private:
         uint8_t _frameType;
-        uint8_t _frameId; // Do not set to 0. Setting Frame ID to '0' will disable response frame.
         XbeeDestAddress _destinationAddress;
         uint8_t _broadcastRadius; // If set to '0', the broadcast radius will be set to the maximum hops value.
         uint8_t _options; // No option is actually needed. Set to 0
-        uint8_t* _data; // Up to 255 bytes of data could be sent.
 
 };
 
