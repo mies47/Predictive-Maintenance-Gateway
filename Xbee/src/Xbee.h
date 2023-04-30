@@ -25,6 +25,7 @@
 #define START_DELIMITER 0x7E
 #define Tx_REQ_API_ID 0x10
 #define Tx_STATUS_API_ID 0x8B
+#define FIXED_TX_FRAME_LENGTH 18
 
 
 class XbeeDestAddress
