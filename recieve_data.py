@@ -48,8 +48,17 @@ def recieve(data_list: DataModelList, measurement_id: str):
             device.close()
 
 
+def load_cached_data():
+	with open('cached', 'rb') as f:
+		try:
+			data = pickle.load(f)
+			return data
+		except:
+			return DataModelList()
+
+
 if __name__ == '__main__':
-    data_list = DataModelList()
+    data_list = load_cached_data()
 
     measurement_id = uuid.uuid4().hex
 
