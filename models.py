@@ -29,11 +29,11 @@ class DataModelList:
 		self.data.append(d)
 
 
-	def get_node_data_model(self, nodeId: str) -> DataModel:
-		for dataModel in self.data:
+	def add_vibration_data(self, nodeId: str, vibrationData: VibrationData):
+		for i, dataModel in enumerate(self.data):
 			if dataModel.nodeId == nodeId:
-				return dataModel
-		dataModel = DataModel(nodeId=nodeId)
+				self.data[i].add_vibration_data(d=vibrationData)
+				return
+		
+		dataModel = DataModel(nodeId=nodeId, vibrationData=[vibrationData])
 		self.add_data_model(d=dataModel)
-
-		return dataModel
