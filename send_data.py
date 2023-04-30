@@ -1,10 +1,9 @@
-import sys
 import json
 import pickle
 import requests
 
-from models import VibrationData, DataModel, DataModelList
-from utils import get_current_time, get_mac_address, ModelJsonObject
+from models import DataModelList
+from utils import get_mac_address, ModelJsonObject
 from env_vars import REQUEST_PROTOCOL, SERVER_IP, SERVER_PORT, \
 					 API_PREFIX, DATA_ENDPOINT, TOKEN_ENDPOINT, PASSWORD
 
@@ -39,6 +38,9 @@ def get_new_token() -> str:
 def send_vibration_data(cached_data: DataModelList):
 	global TOKEN
 
+	if cached_data is None:
+		return
+
 	send_url = f'{BASE_URL}{API_PREFIX}{DATA_ENDPOINT}'
 
 	auth_header = lambda token: {'Authorization': f'Bearer {token}'}
@@ -48,22 +50,24 @@ def send_vibration_data(cached_data: DataModelList):
 	if r.status_code in [401, 403]:
 		TOKEN = get_new_token()
 		r = requests.post(send_url, data=json.dumps(cached_data, cls=ModelJsonObject, indent=4), headers=auth_header(TOKEN))
-
+	
 	r.close()
-	# TODO: Check if data is sent successfully and clear the cached data
-	if True:
+
+	if r.status_code == 202:
 		open('cached', 'wb').close()
 
 
 def load_cached_data():
 	with open('cached', 'rb') as f:
-		return pickle.load(f)
+		try:
+			data = pickle.load(f)
+			return data
+		except:
+			return None
 
 
 if __name__ == '__main__':
 
-	# cached_data = load_cached_data()
+	cached_data = load_cached_data()
 
-	# TODO: Check if a specific amount of time has passed since the last data transfer
-	if True:
-		send_vibration_data(cached_data=None)
+	send_vibration_data(cached_data=cached_data)
