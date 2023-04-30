@@ -37,9 +37,7 @@ def recieve(data_list: DataModelList, measurement_id: str):
                 node_id = xbee_message.remote_device.get_64bit_addr()
                 vibration_data = fill_vibration(raw_data=xbee_message.data, measurement_id=measurement_id)
                 
-                data_model = data_list.get_node_data_model(nodeId=node_id)
-                
-                data_model.add_vibration_data(vibration_data)
+                data_list.add_vibration_data(nodeId=node_id, vibrationData=vibration_data)
                 update_cached_data(data_list)
     
     except Exception as e:
