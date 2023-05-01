@@ -5,7 +5,7 @@ import requests
 from models import DataModelList
 from utils import get_mac_address, ModelJsonObject
 from env_vars import REQUEST_PROTOCOL, SERVER_IP, SERVER_PORT, \
-					 API_PREFIX, DATA_ENDPOINT, TOKEN_ENDPOINT, PASSWORD
+					 API_PREFIX, DATA_ENDPOINT, TOKEN_ENDPOINT, PASSWORD, PWD
 
 
 BASE_URL = f'{REQUEST_PROTOCOL}://{SERVER_IP}:{SERVER_PORT}'
@@ -15,17 +15,8 @@ TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWMiOiJhZG1pbiIsImV4cCI6MTY4MT
 def get_new_token() -> str:
 	token_url = f'{BASE_URL}{API_PREFIX}{TOKEN_ENDPOINT}'
 
-	# Uncomment this part after testing
-
-	# body = {
-	# 	'mac': get_mac_address(),
-	# 	'password': PASSWORD
-	# }
-
-	# Comment this part after production
-
 	body = {
-		'mac': 'admin',
+		'mac': get_mac_address(),
 		'password': PASSWORD
 	}
 
@@ -58,10 +49,10 @@ def send_vibration_data(cached_data: DataModelList):
 
 
 def load_cached_data():
-	with open('cached', 'rb') as f:
 		try:
-			data = pickle.load(f)
-			return data
+			with open(f'{PWD}/cached', 'rb') as f:
+				data = pickle.load(f)
+				return data
 		except:
 			return None
 

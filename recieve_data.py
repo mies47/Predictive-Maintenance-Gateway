@@ -5,15 +5,15 @@ import logging
 
 from digi.xbee.devices import XBeeDevice
 
-from models import VibrationData, DataModel, DataModelList
-from env_vars import XBEE_DIR, BAUD_RATE
+from models import VibrationData, DataModelList
+from env_vars import XBEE_DIR, BAUD_RATE, PWD
 
 
 logger = logging.basicConfig(filename="reciever.log")
 
 
 def update_cached_data(data_list: DataModelList):
-    with open('cached', 'wb') as f:
+    with open(f'{PWD}/cached', 'wb') as f:
         pickle.dump(data_list, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
@@ -49,10 +49,10 @@ def recieve(data_list: DataModelList, measurement_id: str):
 
 
 def load_cached_data():
-	with open('cached', 'rb') as f:
 		try:
-			data = pickle.load(f)
-			return data
+			with open(f'{PWD}/cached', 'rb') as f:
+				data = pickle.load(f)
+				return data
 		except:
 			return DataModelList()
 
