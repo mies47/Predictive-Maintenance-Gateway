@@ -8,8 +8,8 @@ from env_vars import REQUEST_PROTOCOL, SERVER_IP, SERVER_PORT, \
 					 API_PREFIX, DATA_ENDPOINT, TOKEN_ENDPOINT, PASSWORD, PWD
 
 
+TOKEN = ''
 BASE_URL = f'{REQUEST_PROTOCOL}://{SERVER_IP}:{SERVER_PORT}'
-TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWMiOiJhZG1pbiIsImV4cCI6MTY4MTkyOTcwNn0.U-a-XN1yla-z1dDhTdGKuzQby8f-iCWidnAo2gxVyzq'
 
 
 def get_new_token() -> str:
