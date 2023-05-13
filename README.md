@@ -16,6 +16,12 @@ Add .env file based on the fields declared in .env.example file:
 Install all the required python packages using:
 ```pip3 install -r requirements.txt```
 
+Start the cached vibration data post cronjob using
+```bash schedule.sh```
+
+Start the receive data listener using
+```python3 receive_data.py```
+
 ## Include Xbee in Arduino IDE
 
 To use Xbee in Arduino IDE copy and paste the Xbee folder in ```${arduino_path}/libraries```. Open the IDE and either include it by hand or use Sketch > Include Library > Xbee.
