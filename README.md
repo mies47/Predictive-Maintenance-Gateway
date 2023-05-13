@@ -16,10 +16,10 @@ Add .env file based on the fields declared in .env.example file:
 Install all the required python packages using:
 ```pip3 install -r requirements.txt```
 
-Start the cached vibration data post cronjob using
+Start the cached vibration data post cronjob using:
 ```bash schedule.sh```
 
-Start the receive data listener using
+Start the receive data listener using:
 ```python3 receive_data.py```
 
 ## Include Xbee in Arduino IDE
