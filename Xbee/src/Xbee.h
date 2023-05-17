@@ -20,12 +20,14 @@
 #define Xbee_h
 
 #include "stdint.h"
+#include "stdlib.h"
 #include "SoftwareSerial.h"
 
 #define START_DELIMITER 0x7E
 #define Tx_REQ_API_ID 0x10
 #define Tx_STATUS_API_ID 0x8B
 #define FIXED_TX_FRAME_LENGTH 18
+#define MAX_SAMPLE_PER_FRAME 15
 
 
 class XbeeDestAddress

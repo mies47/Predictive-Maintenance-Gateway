@@ -22,6 +22,9 @@ void XbeeDestAddress::getXbeeDest16BitAddress(uint8_t* addressBuffer16Bit)
     }
 }
 
+/* Utill function to convert float to a uint8_t* format ex. 3.345 -> {"+", "3", "3", "4", "5"} */
+void saveFloatInBuffer(float number, uint8_t* buffer, size_t bufferSize);
+
 
 XbeeRequest::XbeeRequest(
     uint8_t frameType,
@@ -99,10 +102,22 @@ void XbeeRequest::constructFrame(
     currentIndex++;
 
     // RF Data
-    for(int i = 0; i < dataSize; i++) { // MSB first
-        frameBuffer[currentIndex] = (uint8_t) data[i];
-        checksum += data[i];
-        currentIndex++;
+
+    /*  
+        First byte of every frame payload is frameID since frameID assigned in
+        Tx frame is not received in Rx frame.
+    */
+    frameBuffer[measurementIndex] = (uint8_t) data[0];
+    measurementIndex++;
+
+    // Not a very clean implementation!
+    // But hey, I'm up against many constraints and my hands are tied.
+    for(int i = 1; i < dataSize; i++) { // MSB first
+        saveFloatInBuffer(data[i], frameBuffer, currentIndex);
+        for(int j = 0; j < 5; j++) {
+            checksum += frameBuffer[currentIndex];
+            currentIndex++;
+        }
     }
 
     // Checksum
@@ -115,4 +130,23 @@ void XbeeRequest::writeFrameToSerial(
     SoftwareSerial serialToWrite)
 {
     serialToWrite.write(frame, frameSize);
+}
+
+
+void saveFloatInBuffer(float number, uint8_t* buffer, int buffIndex) {
+    if(number > 0) {
+        buffer[buffIndex] = (uint8_t) '+';
+    } else if (number < 0) {
+        buffer[buffIndex] = (uint8_t) '-';
+        number *= -1;
+    } else {
+        buffer[buffIndex] = '0';
+    }
+
+    buffer[buffIndex + 1] = ((int)number % 10) + '0';
+    
+    for(int i = 1; i <= 3; i++) {
+        buffer[buffIndex+i+1] = ((int)(number*(10^i)) % 10) + '0';
+    }
+    
 }
