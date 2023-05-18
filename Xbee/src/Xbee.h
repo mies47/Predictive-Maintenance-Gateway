@@ -55,8 +55,9 @@ class XbeeRequest
             uint8_t frameId, 
             uint8_t* frameBuffer, 
             size_t bufferSize, 
-            uint8_t* data, 
-            size_t dataSize
+            float* data, 
+            int dataStartIndex,
+            int dataEndIndex
         );
         void writeFrameToSerial(
             uint8_t* frame, 
