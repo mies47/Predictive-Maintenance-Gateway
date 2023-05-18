@@ -23,8 +23,23 @@ void XbeeDestAddress::getXbeeDest16BitAddress(uint8_t* addressBuffer16Bit)
 }
 
 /* Utill function to convert float to a uint8_t* format ex. 3.345 -> {"+", "3", "3", "4", "5"} */
-void saveFloatInBuffer(float number, uint8_t* buffer, size_t bufferSize);
+void saveFloatInBuffer(float number, uint8_t* buffer, int buffIndex) {
+    if(number > 0) {
+        buffer[buffIndex] = (uint8_t) '+';
+    } else if (number < 0) {
+        buffer[buffIndex] = (uint8_t) '-';
+        number *= -1;
+    } else {
+        buffer[buffIndex] = '0';
+    }
 
+    buffer[buffIndex + 1] = ((int)number % 10) + '0';
+    
+    for(int i = 1; i <= 3; i++) {
+        buffer[buffIndex+i+1] = ((int)(number*(10^i)) % 10) + '0';
+    }
+    
+}
 
 XbeeRequest::XbeeRequest(
     uint8_t frameType,
@@ -42,8 +57,10 @@ void XbeeRequest::constructFrame(
     uint8_t frameId, 
     uint8_t* frameBuffer, 
     size_t bufferSize, 
-    uint8_t* data, 
-    size_t dataSize)
+    float* data, 
+    int dataStartIndex,
+    int dataEndIndex
+)
 {
     // Exclude start delimeter, length, and checksum
     const int frameLength = bufferSize - 4;
@@ -107,12 +124,13 @@ void XbeeRequest::constructFrame(
         First byte of every frame payload is frameID since frameID assigned in
         Tx frame is not received in Rx frame.
     */
-    frameBuffer[measurementIndex] = (uint8_t) data[0];
-    measurementIndex++;
+    frameBuffer[currentIndex] = (uint8_t) frameId;
+    checksum += frameBuffer[currentIndex];
+    currentIndex++;
 
     // Not a very clean implementation!
     // But hey, I'm up against many constraints and my hands are tied.
-    for(int i = 1; i < dataSize; i++) { // MSB first
+    for(int i = dataStartIndex; i <= dataEndIndex; i++) { // MSB first
         saveFloatInBuffer(data[i], frameBuffer, currentIndex);
         for(int j = 0; j < 5; j++) {
             checksum += frameBuffer[currentIndex];
@@ -130,23 +148,4 @@ void XbeeRequest::writeFrameToSerial(
     SoftwareSerial serialToWrite)
 {
     serialToWrite.write(frame, frameSize);
-}
-
-
-void saveFloatInBuffer(float number, uint8_t* buffer, int buffIndex) {
-    if(number > 0) {
-        buffer[buffIndex] = (uint8_t) '+';
-    } else if (number < 0) {
-        buffer[buffIndex] = (uint8_t) '-';
-        number *= -1;
-    } else {
-        buffer[buffIndex] = '0';
-    }
-
-    buffer[buffIndex + 1] = ((int)number % 10) + '0';
-    
-    for(int i = 1; i <= 3; i++) {
-        buffer[buffIndex+i+1] = ((int)(number*(10^i)) % 10) + '0';
-    }
-    
 }
