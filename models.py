@@ -1,39 +1,43 @@
-from typing import List
-from utils import get_current_time
+import threading
+
+from typing import List, Dict
+from utils import get_current_time, update_cached_data
+from env_vars import SAMPLING_FREQ, SAMPLING_WAIT_TIME
 
 class VibrationData:
-	def __init__(self, measurementId: str, x: float, y: float, z: float):
-		self.time = get_current_time()
-		self.measurementId = measurementId
+	def __init__(self, x: float, y: float, z: float):
 		self.x = x
 		self.y = y
 		self.z = z
 
 
-class DataModel:
-	def __init__(self, nodeId: str, vibrationData: List[VibrationData] = []):
-		self.nodeId = nodeId
-		self.vibrationData = vibrationData
+class Measurement:
+	def __init__(self, id: str, data: List[VibrationData] = []):
+		self.time = get_current_time()
+		self.id = measurement_id
+		self._data = measured_data
 
-
-	def add_vibration_data(self, d: VibrationData):
-		self.vibrationData.append(d)
-
-
-class DataModelList:
-	def __init__(self, data: List[DataModel] = []):
-		self.data = data
-
-
-	def add_data_model(self, d: DataModel):
-		self.data.append(d)
-
-
-	def add_vibration_data(self, nodeId: str, vibrationData: VibrationData):
-		for i, dataModel in enumerate(self.data):
-			if dataModel.nodeId == nodeId:
-				self.data[i].add_vibration_data(d=vibrationData)
-				return
+	def thread_handler(self, data_dict: Dict[str, Node]):
+		if len(self._data) < SAMPLING_FREQ:
+			data_list_length = len(self._data)
+			for i in range(SAMPLING_FREQ - data_list_length):
+				self.add_new_data(self._data[i])
 		
-		dataModel = DataModel(nodeId=nodeId, vibrationData=[vibrationData])
-		self.add_data_model(d=dataModel)
+		update_cached_data(data_dict)
+
+	def add_new_data(self, new_data: VibrationData):
+		self._data.append(new_data)
+	
+	def add_new_data_list(self, new_data_list: List[VibrationData]):
+		self._data.extend(new_data_list)
+
+
+class Node:
+	def __init__(self, node_id:str, measurements: Dict[str, Measurement] = {}):
+		self.node_id = node_id
+		self._measurements = measurements
+
+	def add_new_measurement(self, measurement: Measurement, data_dict = Dict[str, Node]):
+		if not self._measurements.get(measurement.id):
+			self._measurements[measurement.id] = measurement
+			threading.Timer(SAMPLING_WAIT_TIME, measurement.thread_handler, args=(data_dict,))

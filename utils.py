@@ -1,6 +1,10 @@
 import uuid
 import json
 import datetime
+import pickle
+
+from typing import Dict
+from models import Node
 
 
 class ModelJsonObject(json.JSONEncoder):
@@ -20,3 +24,8 @@ def get_current_time():
 	current_datetime = current_datetime.astimezone(datetime.timezone.utc)
 	current_datetime = current_datetime.replace(tzinfo=datetime.timezone.utc).timestamp()
 	return current_datetime
+
+
+def update_cached_data(data_dict: Dict[str, Node]):
+    with open(f'{PWD}/cached', 'wb') as f:
+        pickle.dump(data_list, f, protocol=pickle.HIGHEST_PROTOCOL)
