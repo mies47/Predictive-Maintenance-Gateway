@@ -3,8 +3,8 @@ import json
 import datetime
 import pickle
 
-from typing import Dict
-from models import Node
+from typing import Dict, Tuple, List
+from models import Node, VibrationData
 
 
 class ModelJsonObject(json.JSONEncoder):
@@ -29,3 +29,20 @@ def get_current_time():
 def update_cached_data(data_dict: Dict[str, Node]):
     with open(f'{PWD}/cached', 'wb') as f:
         pickle.dump(data_list, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def decode_sensor_data(raw_data: str) -> Tuple(str, List[VibrationData]):
+	'Receives raw sensor data returns measurement_id, List[VibrationData] sensor_data'
+	measurement_id = str(raw_data[0])
+	measurement_data = []
+
+	index = 1
+	while index < len(raw_data):
+		vibration_data = []
+		for _ in range(3):
+			vibration_data.append(raw_data[index:index+2] + '.' + raw_data[index+2:index+5])
+			index += 5
+		measurement_data.append(VibrationData(*vibration_data))
+
+	
+	return measurement_id, measurement_data
