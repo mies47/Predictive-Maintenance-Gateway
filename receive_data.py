@@ -4,25 +4,31 @@ import pickle
 import logging
 
 from digi.xbee.devices import XBeeDevice
+from typing import Dict, Tuple, List
 
-from models import VibrationData, DataModelList
+from models import Node, Measurement, VibrationData
 from env_vars import XBEE_DIR, BAUD_RATE, PWD
 
 
 logger = logging.basicConfig(filename="reciever.log")
 
 
-def update_cached_data(data_list: DataModelList):
-    with open(f'{PWD}/cached', 'wb') as f:
-        pickle.dump(data_list, f, protocol=pickle.HIGHEST_PROTOCOL)
+def decode_sensor_data(raw_data: str) -> Tuple[str, List[VibrationData]]:
+	'Receives raw sensor data returns measurement_id, List[VibrationData] sensor_data'
+	measurement_id = str(raw_data[0])
+	measurement_data = []
 
+	index = 1
+	while index < len(raw_data):
+		vibration_data = []
+		for _ in range(3):
+			vibration_data.append(raw_data[index:index+2] + '.' + raw_data[index+2:index+5])
+			index += 5
+		measurement_data.append(VibrationData(*vibration_data))
+	
+	return measurement_id, measurement_data
 
-def fill_vibration(raw_data: str, measurement_id: str) -> VibrationData:
-    decoded_data = json.loads(raw_data)
-    return VibrationData(measurementId=measurement_id, x=decoded_data.x, y=decoded_data.y, z=decoded_data.z)
-
-
-def recieve(data_list: DataModelList, measurement_id: str):
+def recieve(data_dict: Dict[str, Node]):
     device = XBeeDevice(XBEE_DIR, BAUD_RATE)
 
     try:
@@ -35,10 +41,16 @@ def recieve(data_list: DataModelList, measurement_id: str):
 
             if xbee_message is not None:
                 node_id = xbee_message.remote_device.get_64bit_addr()
-                vibration_data = fill_vibration(raw_data=xbee_message.data, measurement_id=measurement_id)
+                measurement_id, measurement_data = decode_sensor_data(raw_data)
+
+                if not data_dict.get(node_id):
+                    data_dict[node_id] = Node(node_id)
                 
-                data_list.add_vibration_data(nodeId=node_id, vibrationData=vibration_data)
-                update_cached_data(data_list)
+                data_dict[node_id].add_measurement(
+                    measurement_id,
+                    measurement_data,
+                    data_dict
+                )
     
     except Exception as e:
         logging.exception(e)
@@ -54,13 +66,11 @@ def load_cached_data():
 				data = pickle.load(f)
 				return data
 		except:
-			return DataModelList()
+			return {}
 
 
 if __name__ == '__main__':
-    data_list = load_cached_data()
-
-    measurement_id = uuid.uuid4().hex
+    data_dict = load_cached_data()
 
     while True:
-        recieve(data_list=data_list, measurement_id=measurement_id)
+        recieve(data_dict=data_dict)

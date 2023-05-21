@@ -16,10 +16,10 @@ TOKEN_ENDPOINT = os.getenv('TOKEN_ENDPOINT')
 SIGN_UP_ENDPOINT = os.getenv('SIGN_UP_ENDPOINT')
 
 
-SAMPLING_FREQ = os.getenv('SAMPLING_FREQ')
-SAMPLING_WAIT_TIME = os.getenv('SAMPLING_WAIT_TIME')
+SAMPLING_FREQ = int(os.getenv('SAMPLING_FREQ'))
+SAMPLING_WAIT_TIME = int(os.getenv('SAMPLING_WAIT_TIME'))
 
 XBEE_DIR = os.getenv('XBEE_DIR')
-BAUD_RATE = os.getenv('BAUD_RATE')
+BAUD_RATE = int(os.getenv('BAUD_RATE'))
 
 PASSWORD = os.getenv('PASSWORD')
