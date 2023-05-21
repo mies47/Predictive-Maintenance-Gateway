@@ -18,6 +18,7 @@ class Measurement:
 		self._data = measured_data
 
 	def thread_handler(self, data_dict: Dict[str, Node]):
+		'Completes the measurement data in case of frame loss then updates the cache'
 		if len(self._data) < SAMPLING_FREQ:
 			data_list_length = len(self._data)
 			for i in range(SAMPLING_FREQ - data_list_length):
@@ -38,6 +39,7 @@ class Node:
 		self._measurements = measurements
 
 	def add_new_measurement(self, measurement: Measurement, data_dict = Dict[str, Node]):
+		'If this is a new measurement add it to node and start the timer to check sampling'
 		if not self._measurements.get(measurement.id):
 			self._measurements[measurement.id] = measurement
 			threading.Timer(SAMPLING_WAIT_TIME, measurement.thread_handler, args=(data_dict,))
