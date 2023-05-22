@@ -41,8 +41,11 @@ def recieve(data_dict: Dict[str, Node]):
             xbee_message = device.read_data()
 
             if xbee_message is not None:
-                node_id = xbee_message.remote_device.get_64bit_addr()
+                node_id = str(xbee_message.remote_device.get_64bit_addr())
                 measurement_id, measurement_data = decode_sensor_data(xbee_message.data)
+
+                # Update the data_dict if the data is sent
+                data_dict = load_cached_data()
 
                 if not data_dict.get(node_id):
                     data_dict[node_id] = Node(node_id)
