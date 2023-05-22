@@ -1,9 +1,8 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
-#include <ArduinoJson.h>
 #include <Xbee.h>
+#include <LowPower.h>
 
 /*
     Sampling frequency could be as much as you'd like considering serial communication to
@@ -16,7 +15,7 @@
 */
 const int SAMPLING_FREQ = 60;
 const int SAMPLING_DELAY = 1000 / SAMPLING_FREQ;
-const int MEASUREMENT_DELAY = 20 * 60 * 1000; // Every 20 minutes
+const int MEASUREMENT_SLEEP_PERIOD = 20 * 60 * 1000; // Every 20 minutes
 const int FRAGMENTATION_DELAY = 3 * 1000; // 3 seconds delay to ensure correct frame delivery
 
 /* Any measured number is represented in 5 bytes ex. -0.365 -> {'-', '0', '3', '6', '5'}*/
@@ -45,6 +44,13 @@ Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 // These are the correct addresses for a coordinator
 XbeeDestAddress xbeeDestinationAddress = XbeeDestAddress(0x00000000, 0xFFFE);
 XbeeRequest xbeeReq = XbeeRequest(Tx_REQ_API_ID, xbeeDestinationAddress, 0x00, 0x00);
+
+/* 
+    Function to sleep for a longer period. The max sleep period is 8 seconds.
+    This method uses arduino watchdog timer. Watchdog is pretty inaccurate but does
+    the job in our case. Other methods are using external interrupt or timer comp.
+ */
+void longSleep(int sleep_period);
 
 void setup() {
     xbeeSerial.begin(9600);
@@ -109,6 +115,13 @@ void loop() {
         delay(FRAGMENTATION_DELAY);
     }
 
-    /* Delay per each round of measurement*/
-    delay(MEASUREMENT_DELAY);
+    /* PowerDown per each round of measurement to save energy */
+    longSleep(MEASUREMENT_SLEEP_PERIOD);
 }
+
+void longSleep(int sleep_period) {
+    while(sleep_time > 0) {
+        LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+        sleep_time -= 8000;
+    } 
+} 
