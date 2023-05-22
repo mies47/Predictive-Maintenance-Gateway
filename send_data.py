@@ -1,8 +1,9 @@
 import json
 import pickle
 import requests
+from typing import Dict
 
-from models import DataModelList
+from models import Node
 from utils import get_mac_address, ModelJsonObject
 from env_vars import REQUEST_PROTOCOL, SERVER_IP, SERVER_PORT, \
 					 API_PREFIX, DATA_ENDPOINT, TOKEN_ENDPOINT, PASSWORD, PWD
@@ -26,7 +27,7 @@ def get_new_token() -> str:
 	return r.json().get('token')
 
 
-def send_vibration_data(cached_data: DataModelList):
+def send_vibration_data(cached_data: Dict[str, Node]):
 	global TOKEN
 
 	if cached_data is None:
