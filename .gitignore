@@ -4,3 +4,4 @@ config.json
 .vscode
 .env
 cached
+venv
