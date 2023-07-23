@@ -7,8 +7,7 @@ from typing import Dict, Tuple, List
 from models import Node, VibrationData
 from env_vars import XBEE_DIR, BAUD_RATE, PWD
 
-
-logger = logging.basicConfig(filename="reciever.log")
+logging.basicConfig(filename=f"{PWD}/reciever.log", level=logging.INFO)
 
 
 def decode_sensor_data(raw_data: str) -> Tuple[str, List[VibrationData]]:
@@ -43,6 +42,8 @@ def recieve(data_dict: Dict[str, Node]):
             if xbee_message is not None:
                 node_id = str(xbee_message.remote_device.get_64bit_addr())
                 measurement_id, measurement_data = decode_sensor_data(xbee_message.data)
+
+                logging.info(f"Received data from {node_id} measurment {measurement_id}")
 
                 # Update the data_dict if the data is sent
                 data_dict = load_cached_data()

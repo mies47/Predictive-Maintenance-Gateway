@@ -16,7 +16,7 @@ Add .env file based on the fields declared in .env.example file:
 Install all the required python packages using:
 ```pip3 install -r requirements.txt```
 
-Start the cached vibration data post cronjob using:
+Start the cached vibration data post cronjob and enable receive_data script as a startup service using:
 ```bash schedule.sh```
 
 Start the receive data listener using:
