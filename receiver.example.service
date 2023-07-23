@@ -1,0 +1,10 @@
+[Unit]
+Description=run python receiver script at startup
+
+[Service]
+User=USER_TO_REPLACE
+ExecStart=/usr/bin/python3 PATH_TO_REPLACE &
+ExecStartPre=/bin/sleep 10
+
+[Install]
+WantedBy=multi-user.target
